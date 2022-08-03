@@ -20,7 +20,6 @@ class UpdateDownDialog extends StatefulWidget {
 
   static Future<bool> _onWillPop() async {
     return true;
-
   }
 
   final StreamController<double> streamController;
@@ -35,6 +34,7 @@ class UpdateDownDialog extends StatefulWidget {
 class _UpdateDownDialogState extends State<UpdateDownDialog> {
   int downloadProgress = 0;
 
+
   StreamController<double> get _streamController => widget.streamController;
 
   @override
@@ -45,7 +45,6 @@ class _UpdateDownDialogState extends State<UpdateDownDialog> {
   @override
   void dispose() {
     super.dispose();
-
   }
 
   @override
