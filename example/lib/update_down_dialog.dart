@@ -20,6 +20,7 @@ class UpdateDownDialog extends StatefulWidget {
 
   static Future<bool> _onWillPop() async {
     return true;
+
   }
 
   final StreamController<double> streamController;
