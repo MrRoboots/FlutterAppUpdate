@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_update/azhon_app_update.dart';
 import 'package:flutter_app_update/update_model.dart';
+import 'package:flutter_app_update_example/update_down_dialog2.dart';
+
+import 'update_down_dialog.dart';
 
 void main() {
   runApp(App());
@@ -27,12 +32,48 @@ class _HomePageState extends State<HomePage> {
   String url =
       "https://imtt.dd.qq.com/16891/apk/FA48766BA12A41A1D619CB4B152889C6.apk?fsname=com.estrongs.android.pop_4.2.3.3_10089.apk&csr=1bbd";
 
+  double progress = 0.0;
+  late StreamController<double> _streamController;
+
+  ///ValueNotifier
+  ValueNotifier<double> _valueNotifier = ValueNotifier<double>(0.0);
+
   @override
   void initState() {
     super.initState();
+    _streamController = StreamController.broadcast();
+
     AzhonAppUpdate.listener((map) {
       print(map['type']);
+
+      switch (map['type']) {
+        case 'downloading':
+          var max = map['max'];
+          var progress = map['progress'];
+          print('max :$max progress :$progress');
+
+          double total = progress / max * 100;
+          print('百分比：${total.toInt()}');
+
+          var number = total / 100;
+          print('百分比进度：$number');
+
+          this.progress = number;
+
+          _streamController.sink.add(this.progress);
+
+          _valueNotifier.value = this.progress;
+          break;
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (!_streamController.isClosed) {
+      _streamController.close();
+    }
   }
 
   @override
@@ -46,6 +87,12 @@ class _HomePageState extends State<HomePage> {
             '使用说明：三个方式不能并行 请等待一个方式下载完成在使用其他方式',
             style: TextStyle(color: Color(0xFFD81B60), fontSize: 14),
           ),
+          _item('自定义进度条2', () {
+            _useMyDialog2();
+          }),
+          _item('自定义进度条', () {
+            _useMyDialog();
+          }),
           _item('使用自己的对话框更新', () {
             _useOwnerDialog();
           }),
@@ -142,9 +189,23 @@ class _HomePageState extends State<HomePage> {
       "flutterUpdate.apk",
       "ic_launcher",
       "1.支持Android M N O P Q\n2.支持自定义下载过程\n3.支持 设备>=Android M 动态权限的申请\n4.支持通知栏进度条展示\n5.支持文字国际化",
-      iOSUrl: 'https://itunes.apple.com/cn/app/抖音/id1142110895',
+      iOSUrl: 'https://apps.apple.com/cn/app/%E4%BB%A3%E9%A9%BE%E5%8A%A9%E6%89%8B2/id1536707421',
       showiOSDialog: showiOSDialog,
     );
     AzhonAppUpdate.update(model).then((value) => print(value));
+  }
+
+  ///自定义带进度条显示进度
+  void _useMyDialog() {
+    UpdateDownDialog.showUpdateDowningDialog(context, _streamController, () {
+      _simpleUse(false);
+    });
+  }
+
+  void _useMyDialog2() {
+    //ValueNotifier<double>
+    UpdateDownDialog2.showUpdateDowningDialog(context, _valueNotifier, () {
+      _simpleUse(false);
+    });
   }
 }

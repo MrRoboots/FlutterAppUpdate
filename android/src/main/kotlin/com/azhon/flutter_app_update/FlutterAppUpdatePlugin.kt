@@ -18,7 +18,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import org.json.JSONObject
 import java.io.File
-import java.lang.Exception
 
 /**
  *版本更新插件
@@ -92,7 +91,7 @@ class FlutterAppUpdatePlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun update(call: MethodCall, result: Result) {
         val model = call.argument<HashMap<String, Any>>("model")
         //释放之前的
-        manager?.release()
+//        manager?.release()
         //获取图标
         val smallIcon = applicationContext.resources.getIdentifier(
             model!!["smallIcon"] as String, "mipmap", applicationContext.packageName
@@ -168,6 +167,7 @@ class FlutterAppUpdatePlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             events?.success(json.toString())
         }
 
+
         override fun done(apk: File) {
             manager = null
             val json = json("done")
@@ -179,7 +179,7 @@ class FlutterAppUpdatePlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             events?.success(json("cancel").toString())
         }
 
-        override fun error(e: Exception) {
+        override fun error(e: Throwable) {
             val json = json("error")
             json.put("exception", e.message)
             events?.success(json.toString())
