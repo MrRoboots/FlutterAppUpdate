@@ -34,7 +34,6 @@ class UpdateDownDialog extends StatefulWidget {
 class _UpdateDownDialogState extends State<UpdateDownDialog> {
   int downloadProgress = 0;
 
-
   StreamController<double> get _streamController => widget.streamController;
 
   @override
